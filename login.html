@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script type="module" src="login.js" defer></script>
+    <style>
+        body {
+            background-color: beige;
+        }
+        #login-form {
+            background-color: rgb(70, 67, 67);
+            width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 10% auto;
+            text-align: center;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            width: 50%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: beige;
+            border: none;
+            cursor: pointer;
+        }
+        h1, p, a {
+            color: beige;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <form id="login-form">
+        <h1>LOGIN</h1>
+        <input type="email" id="login-email" placeholder="Enter Your Email" required>
+        <input type="password" id="login-password" placeholder="Enter Your Password" required>
+        <button type="submit">Login</button>
+        <p>Don't have an account? <a href="register.html">Register Here</a></p>
+    </form>
+</body>
+</html>
