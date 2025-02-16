@@ -7,54 +7,95 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script type="module" src="register.js" defer></script>
     <style>
-        body{
-            background-color: beige;
-        }
-     #form{
-            background-color: rgb(70, 67, 67);
-            width: 500px;
-            display: flex;
-            flex-direction: column;
-            padding: 50px;
-            border-radius: 20px;
-            margin: 10% 20% 20% 30%;
-            
-        }
-        input{
-            width: 250px;
-            height: 25px;
-            border-radius: 6px;
-            margin-top: 15px;
-            margin-left: 20%;
-        }
-        button{
-            width: 70px;
-            margin-left: 42%;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        h1{
-            color: beige;
-            text-align: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        p,a{
-            color:beige;
-            text-decoration: none;
-            text-align: center;
-        }
+      @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Lexend+Giga:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body {
+    background-color: rgb(255, 255, 255);
+    color: #5271ff;
+    font-family: "Poppins", serif;
+    font-weight: 500;
+    font-style: italic;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px; /* Match spacing with the login page */
+    flex-wrap: wrap; /* Ensure responsiveness */
+}
+
+#form {
+    background-color: #ffffff;
+    box-shadow: 10px 10px 16px #5271ff;
+    width: 400px;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid #5271ff;
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 2px solid #5271ff;
+}
+
+button {
+    width: 50%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #5271ff;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    border-radius: 10px 0 10px 10px;
+}
+
+h1, p, a {
+    color: #5271ff;
+    margin-top: 15px;
+    text-decoration: none;
+}
+
+.img img {
+    max-width: 400px;
+    height: auto;
+    border-radius: 10px;
+}
+.logo{
+    margin-left: 100px;
+    width: 290px;
+    height: 290px;    
+}
+
 
     </style>
 </head>
 <body>
-    <form id="form">
-        <h1>REGISTER</h1>
-        <input type="email" id="email" placeholder="Enter Your Email" required>
-        <input type="password" id="password" placeholder="Enter Your Password" required>
-        <button type="submit" id="submit">Register</button>
-        <p>Already have an account? <a href="login.html">Login Here</a></p>
-    
-    </form>
-    
+    <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="logo" class="logo">
+
+    <div class="container">
+        
+
+        <form id="form">
+            <h1>REGISTER</h1>
+            <input type="email" id="email" placeholder="Enter Your Email" required>
+            <input type="password" id="password" placeholder="Enter Your Password" required>
+            <button type="submit" id="submit">Register</button>
+            <p>Already have an account? <a href="login.html">Login Here</a></p>
+        </form>
+        <div class="img">
+            <img src="img/4957136.jpg" alt="">
+        </div>
+    </div>
 </body>
+
 </html> 

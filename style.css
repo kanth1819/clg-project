@@ -1,24 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Lexend+Giga:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 *{
     margin: 0;
     padding: 0%;
+    font-family: "Poppins", serif;
+  font-weight: 500;
+  font-style: italic;
+  color: #5271ff;
+  scroll-behavior: smooth;
 }
 
 nav{
     background-color: rgb(255, 255, 255);
     display: flex;
     align-items: center;
-    height: 90px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 75px;
+  box-shadow: 0 4px 6px #5271ff;
+}
+.fix header, nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 .logo{
-    width: 150px;
-    height: 150px;
+    margin-left: 70px;
+    width: 110px;
+    height: 110px;
 }
 .list{
+    font-size: 18px;
     list-style: none;
-    color: rgb(0, 119, 255);
+    color: #5271ff;
     display: flex;
     margin-inline: 15px;
-    gap: 20px;
-    margin-left: 50%;
+    gap: 40px;
+    margin-left: 40%;
+}
+.list li:hover {
+    text-decoration: underline;
+    font-weight: 500;
+    font-size:20px;
+    
+}
+.log{
+    width: 80px;
+    height: 40px;
+    text-decoration: none;
+    border: 2px solid #5271ff ;
+    border-radius: 17px 0 17px 17px ;
+    font-size: 15px;
+    margin-left: 20px;
+    
+}
+
+.log:hover {
+  width: 90px;
+  height: 45px;
+}
+
+
+.gs{
+  width: fit-content;
+  padding: 10px;
+    height: 50px;
+    text-decoration: none;
+    background-color: #5271ff ;
+    color: aliceblue;
+    border: none;
+    border-radius: 17px 0 17px 17px ;
+    font-size: 15px;
+    
+
+}
+
+.gs:hover{
+  height:60px ;
+  width: 150px;
+}
+
+a{
+    text-decoration: none;
+}
+.name{
+    margin-top: 12%;
+    margin-left: 110px;
+    font-weight: 500;
+}
+.name p{
+    width: 700px;
+}
+.m-img img{
+    width: 400px;
+    position: absolute;
+    right: 60px;
+    bottom: 20%;
+    align-items: center;
+  }
+
+  .title h1{
+    text-align: center;
+    font-size: 35px;
+    font-weight: 500;
+    color: #5271ff;
+
+
+  }
+  .flex{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    flex-basis: 40%;
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
+  .one, .two ,.three ,.four, .five{
+    color: #5271ff;
+    border: 2px solid #959ff7;
+    background-color: rgba(173, 178, 182, 0.377);
+    border-radius: 20px;
+    width: 350px;
+    height: 200px;
+    box-shadow: 0 4px 6px #f6f6f7;
+    margin-top: 50px;
+    margin-inline: 30px;
+  }
+  .one h2, .two h2, .three h2, .four h2, .five h2 {
+    margin: 10px;
+    text-align: center;
+    color: #5271ff;
+}
+
+.one p, .two p, .three p, .four p, .five p {
+    text-align: center;
+    margin: 20px;
+    color: #5271ff;
+
+    
 }
