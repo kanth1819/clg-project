@@ -104,18 +104,58 @@ a{
     font-size: 35px;
     font-weight: 500;
     color: #5271ff;
+    margin-bottom: 40px;
+}
 
-
-  }
-  .flex{
+.flex{
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     flex-wrap: wrap;
-    flex-basis: 40%;
-    margin-left: 50px;
-    margin-right: 50px;
-  }
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
+.feature-card{
+    background-color: white;
+    border-radius: 20px;
+    width: calc(33.33% - 20px);
+    min-width: 300px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(82, 113, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.feature-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(82, 113, 255, 0.2);
+}
+
+.feature-icon{
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.feature-card h2{
+    color: #5271ff;
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.feature-card p{
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+    font-style: normal;
+}
   .one, .two ,.three ,.four, .five{
     color: #5271ff;
     border: 2px solid #959ff7;
