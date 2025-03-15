@@ -1,0 +1,99 @@
+/* Project Details Page Styles */
+.project-details-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(82, 113, 255, 0.15);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(82, 113, 255, 0.25);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-title {
+    color: #5271ff;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+.progress-card {
+    background-color: #f8f9ff;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.progress {
+    background-color: #e8ecff;
+}
+
+.progress-bar {
+    background-color: #5271ff;
+    transition: width 0.6s ease;
+}
+
+/* Task List Styles */
+.list-group-item {
+    border: none;
+    border-radius: 8px !important;
+    margin-bottom: 8px;
+    background-color: #f8f9ff;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #e8ecff;
+}
+
+.form-check-input:checked {
+    background-color: #5271ff;
+    border-color: #5271ff;
+}
+
+/* Team Members Section */
+.team-member-card {
+    transition: all 0.3s ease;
+}
+
+.team-member-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #5271ff;
+    border-color: #5271ff;
+    border-radius: 8px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #4060ff;
+    border-color: #4060ff;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+}
