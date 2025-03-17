@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLOWTRACK - Projects</title>
+    <link rel="icon" type="image/png" href="img/Blue_White_Bold_Music_Logo-removebg-preview.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky">
+                    <div class="text-center py-4">
+                        <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="Logo" class="img-fluid" style="max-width: 150px;">
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.html">
+                                <img src="img/icons/analytics.svg" alt="Dashboard" class="icon">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">
+                                <img src="img/icons/project.svg" alt="Projects" class="icon">
+                                Projects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <img src="img/icons/task.svg" alt="Tasks" class="icon">
+                                Tasks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <img src="img/icons/workflow.svg" alt="Workflow" class="icon">
+                                Workflow
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Projects</h1>
+                    <button class="btn btn-primary" id="addProjectBtn">+ New Project</button>
+                </div>
+
+                <div class="row" id="projectsList">
+                    <!-- Projects will be dynamically added here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="project.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const projectsList = document.getElementById('projectsList');
+            const projects = JSON.parse(localStorage.getItem('projects')) || [];
+
+            // Render projects
+            projects.forEach(project => {
+                const projectCard = document.createElement('div');
+                projectCard.className = 'col-md-4 mb-4';
+                projectCard.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${project.name}</h5>
+                            <p class="card-text">${project.description}</p>
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    Due: ${new Date(project.dueDate).toLocaleDateString()}
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
+                                <div>
+                                    <a href="project-details.html?id=${project.id}" class="btn btn-primary btn-sm">View Details</a>
+                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteProject(${project.id})">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                projectsList.appendChild(projectCard);
+            });
+
+            function deleteProject(projectId) {
+                if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                    const projects = JSON.parse(localStorage.getItem('projects')) || [];
+                    const updatedProjects = projects.filter(project => project.id !== projectId);
+                    localStorage.setItem('projects', JSON.stringify(updatedProjects));
+                    location.reload();
+                }
+            }
+            function getPriorityColor(priority) {
+                switch(priority.toLowerCase()) {
+                    case 'high': return 'danger';
+                    case 'medium': return 'warning';
+                    case 'low': return 'success';
+                    default: return 'secondary';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

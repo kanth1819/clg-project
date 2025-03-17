@@ -74,6 +74,24 @@
     transform: translateY(-5px);
 }
 
+.rounded-circle {
+    border: 3px solid #5271ff;
+    padding: 2px;
+    background-color: #fff;
+}
+
+.task-priority-high {
+    color: #dc3545;
+}
+
+.task-priority-medium {
+    color: #ffc107;
+}
+
+.task-priority-low {
+    color: #28a745;
+}
+
 /* Buttons */
 .btn-primary {
     background-color: #5271ff;

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Add project modal HTML
-    const modalHTML = `
+    // Inject project modal into body
+    document.body.insertAdjacentHTML('beforeend', `
         <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -39,32 +39,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         </div>
-   `;
+    `);
 
-    // Add modal to body
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-    // Initialize projects array in localStorage if it doesn't exist
+    // Initialize projects array in localStorage if not already set
     if (!localStorage.getItem('projects')) {
         localStorage.setItem('projects', JSON.stringify([]));
     }
 
-    // Get the new project button and add click event
-    const newProjectBtn = document.querySelector('.btn-primary');
     const addProjectModal = new bootstrap.Modal(document.getElementById('addProjectModal'));
 
-    newProjectBtn.addEventListener('click', () => {
+    // Open modal on clicking "New Project" button
+    document.getElementById('addProjectBtn').addEventListener('click', () => {
         addProjectModal.show();
     });
 
-    // Handle form submission
+    // Handle project submission
     document.getElementById('saveProject').addEventListener('click', () => {
-        const form = document.getElementById('addProjectForm');
-        const formData = {
-            name: document.getElementById('projectName').value,
-            description: document.getElementById('projectDescription').value,
-            dueDate: document.getElementById('projectDueDate').value,
-            priority: document.getElementById('projectPriority').value,
+        const projectName = document.getElementById('projectName').value.trim();
+        const projectDescription = document.getElementById('projectDescription').value.trim();
+        const projectDueDate = document.getElementById('projectDueDate').value;
+        const projectPriority = document.getElementById('projectPriority').value;
+
+        if (!projectName || !projectDescription || !projectDueDate) {
+            alert('All fields are required.');
+            return;
+        }
+
+        const projects = JSON.parse(localStorage.getItem('projects')) || [];
+        const newProject = {
+            id: Date.now(),
+            name: projectName,
+            description: projectDescription,
+            dueDate: projectDueDate,
+            priority: projectPriority,
             status: 'active',
             tasks: [],
             teamMembers: [],
@@ -72,92 +79,143 @@ document.addEventListener('DOMContentLoaded', () => {
             createdAt: new Date().toISOString()
         };
 
-        if (formData.name && formData.description && formData.dueDate) {
-            // Get existing projects
-            const projects = JSON.parse(localStorage.getItem('projects'));
-            const projectId = projects.length; // Use array index as project ID
-            projects.push(formData);
-            localStorage.setItem('projects', JSON.stringify(projects));
+        projects.push(newProject);
+        localStorage.setItem('projects', JSON.stringify(projects));
 
-            // Update active projects count
-            const activeProjectsCount = document.querySelector('.card h2');
-            if (activeProjectsCount) {
-                activeProjectsCount.textContent = projects.length;
-            }
+        // Update UI
+        addProjectToList(newProject);
+        updateActiveProjectsCount();
 
-            // Clear form
-            form.reset();
-            addProjectModal.hide();
+        // Clear form & hide modal
+        document.getElementById('addProjectForm').reset();
+        addProjectModal.hide();
 
-            // Show success message
-            showNotification('Project added successfully!');
-
-            // Add project to the list
-            addProjectToList(formData, projectId);
-        }
+        // Show success toast notification
+        const successToast = document.getElementById('successToast');
+        const toastBody = successToast.querySelector('.toast-body');
+        toastBody.textContent = `Project "${projectName}" has been created successfully!`;
+        const bsToast = new bootstrap.Toast(successToast, { delay: 3000 });
+        bsToast.show();
     });
 
-    // Function to add project to the list
-    function addProjectToList(project, projectId) {
-        const projectsList = document.querySelector('.projects-list') || document.createElement('div');
-        if (!document.querySelector('.projects-list')) {
-            projectsList.className = 'projects-list';
-            document.querySelector('main').appendChild(projectsList);
+    // Function to update active projects count
+    function updateActiveProjectsCount() {
+        const activeProjectsCount = document.querySelector('.card h2');
+        if (activeProjectsCount) {
+            const projects = JSON.parse(localStorage.getItem('projects')) || [];
+            activeProjectsCount.textContent = projects.length;
+        }
+    }
+
+    // Function to add a project to the list
+    function addProjectToList(project) {
+        let projectsList = document.getElementById('projectsList');
+        
+        // Create list container if it doesn't exist
+        if (!projectsList) {
+            projectsList = document.createElement('div');
+            projectsList.className = 'row';
+            projectsList.id = 'projectsList';
+            document.querySelector('.main-content').appendChild(projectsList);
         }
 
         const projectCard = document.createElement('div');
-        projectCard.className = 'card mb-3 project-card';
-        projectCard.style.cursor = 'pointer';
-        projectCard.style.transition = 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out';
-        projectCard.innerHTML = `
+        projectCard.className = 'col-md-4 mb-3';
+        const cardInner = document.createElement('div');
+        cardInner.className = 'card h-100';
+        cardInner.style.cursor = 'pointer';
+        cardInner.style.transition = 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out';
+        cardInner.innerHTML = `
             <div class="card-body">
-                <h5 class="card-title">${project.name}</h5>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">${project.name}</h5>
+                    <button class="btn btn-danger btn-sm delete-project" data-project-id="${project.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
                 <p class="card-text">${project.description}</p>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
                     <small class="text-muted">Due: ${new Date(project.dueDate).toLocaleDateString()}</small>
                 </div>
                 <div class="progress mt-2" style="height: 10px;">
-                    <div class="progress-bar" role="progressbar" style="width: ${project.progress}%" 
+                    <div class="progress-bar" role="progressbar" style="width: ${project.progress}%"
                          aria-valuenow="${project.progress}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <div class="mt-2 text-muted small">Click to view details</div>
             </div>
         `;
+        projectCard.appendChild(cardInner);
 
         // Add hover effect
-        projectCard.addEventListener('mouseenter', () => {
-            projectCard.style.transform = 'translateY(-5px)';
-            projectCard.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+        cardInner.addEventListener('mouseenter', () => {
+            cardInner.style.transform = 'translateY(-5px)';
+            cardInner.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
         });
 
-        projectCard.addEventListener('mouseleave', () => {
-            projectCard.style.transform = 'translateY(0)';
-            projectCard.style.boxShadow = 'none';
+        cardInner.addEventListener('mouseleave', () => {
+            cardInner.style.transform = 'translateY(0)';
+            cardInner.style.boxShadow = 'none';
         });
 
-        // Add click event to view project details
+        // Handle project deletion
+        const deleteBtn = projectCard.querySelector('.delete-project');
+        deleteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation(); // Prevent triggering the card click event
+            const target = e.target.closest('.delete-project');
+            if (!target) return;
+
+            if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                try {
+                    const projectId = target.dataset.projectId;
+                    const projects = JSON.parse(localStorage.getItem('projects')) || [];
+                    const projectToDelete = projects.find(p => p.id === parseInt(projectId));
+                    
+                    if (!projectToDelete) {
+                        throw new Error('Project not found');
+                    }
+
+                    const updatedProjects = projects.filter(p => p.id !== parseInt(projectId));
+                    localStorage.setItem('projects', JSON.stringify(updatedProjects));
+
+                    // Add fade-out animation
+                    projectCard.style.transition = 'opacity 0.3s ease-out';
+                    projectCard.style.opacity = '0';
+
+                    // Remove the card after animation
+                    setTimeout(() => {
+                        projectCard.remove();
+                        updateActiveProjectsCount();
+                        showNotification('Project deleted successfully!');
+                    }, 300);
+                } catch (error) {
+                    console.error('Error deleting project:', error);
+                    showNotification('Failed to delete project. Please try again.');
+                }
+            }
+        });
+
+
+        // Redirect to project details
         projectCard.addEventListener('click', () => {
-            window.location.href = `project-details.html?id=${projectId}`;
+            window.location.href = `project-details.html?id=${project.id}`;
         });
 
         projectsList.appendChild(projectCard);
     }
 
     // Load existing projects
-    const projects = JSON.parse(localStorage.getItem('projects'));
-    projects.forEach((project, index) => {
-        addProjectToList(project, index);
-    });
+    const projects = JSON.parse(localStorage.getItem('projects')) || [];
+    projects.forEach(addProjectToList);
+    updateActiveProjectsCount();
 
     // Helper function for priority colors
     function getPriorityColor(priority) {
-        switch (priority) {
-            case 'high': return 'danger';
-            case 'medium': return 'warning';
-            case 'low': return 'success';
-            default: return 'secondary';
-        }
+        return {
+            high: 'danger',
+            medium: 'warning',
+            low: 'success'
+        }[priority] || 'secondary';
     }
 
     // Notification function
