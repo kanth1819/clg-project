@@ -63,18 +63,68 @@
 
         .task-list {
             min-height: 200px;
-            padding: 15px;
+            padding: 20px;
             background: white;
             border-radius: 15px;
-            margin: 10px 0;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid rgba(82, 113, 255, 0.1);
         }
 
+        .task-item {
+            background: var(--bg-light);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .task-item:hover {
+            background: white;
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+            box-shadow: 0 2px 4px rgba(82, 113, 255, 0.1);
+        }
+
+        .task-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.02);
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(82, 113, 255, 0.2);
+        }
+
+        .col-md-4 h4 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            padding-left: 5px;
+            font-weight: 600;
+        }
         .task-item {
             background: var(--bg-light);
             padding: 10px;
             margin: 5px 0;
             border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        .task-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .task-list {
+            transition: background-color 0.3s ease;
+        }
+
+        .task-list:hover {
+            background-color: rgba(82, 113, 255, 0.05);
         }
 
         .btn-primary {
@@ -181,3 +231,55 @@
     <script src="dashboard.js"></script>
 </body>
 </html>
+
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 15px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .logo {
+        width: 80px;
+        margin-bottom: 20px;
+    }
+
+    .nav {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-link {
+        padding: 8px 15px;
+        margin: 5px;
+        border-radius: 20px;
+    }
+
+    .card {
+        margin-bottom: 15px;
+    }
+
+    .task-list {
+        margin-bottom: 20px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        margin-left: 200px;
+        padding: 20px;
+    }
+}

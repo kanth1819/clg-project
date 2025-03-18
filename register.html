@@ -80,24 +80,36 @@ h1, p, a {
 
 
     </style>
-</head>
-<body>
-    <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="logo" class="logo">
+}
+@media (max-width: 768px) {
+    #form {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+    }
 
-    <div class="container">
-        
+    .container {
+        padding: 15px;
+        gap: 40px;
+    }
 
-        <form id="form">
-            <h1>REGISTER</h1>
-            <input type="email" id="email" placeholder="Enter Your Email" required>
-            <input type="password" id="password" placeholder="Enter Your Password" required>
-            <button type="submit" id="submit">Register</button>
-            <p>Already have an account? <a href="login.html">Login Here</a></p>
-        </form>
-        <div class="img">
-            <img src="img/4957136.jpg" alt="">
-        </div>
-    </div>
+    input {
+        width: 90%;
+    }
+
+    button {
+        width: 70%;
+    }
+
+    .img {
+        margin-right: 0;
+    }
+
+    .img img {
+        max-width: 100%;
+        height: auto;
+    }
+}
 </body>
 
-</html> 
+</html>
