@@ -1,3 +1,6 @@
+// Initialize EmailJS with your public key
+emailjs.init("YOUR_PUBLIC_KEY");
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('contactForm');
     const nameInput = document.getElementById('name');
@@ -50,15 +53,28 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
 
-            // Simulate form submission
-            setTimeout(() => {
+            // Send email using EmailJS
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+                from_name: nameInput.value,
+                from_email: emailInput.value,
+                message: messageInput.value
+            })
+            .then(() => {
                 form.reset();
                 submitBtn.textContent = 'Message Sent!';
                 setTimeout(() => {
                     submitBtn.textContent = 'Send Message';
                     submitBtn.disabled = false;
                 }, 2000);
-            }, 1500);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                submitBtn.textContent = 'Error Sending';
+                setTimeout(() => {
+                    submitBtn.textContent = 'Send Message';
+                    submitBtn.disabled = false;
+                }, 2000);
+            });
         }
 
         return false;

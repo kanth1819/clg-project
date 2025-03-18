@@ -53,25 +53,43 @@ document.addEventListener('DOMContentLoaded', () => {
         addProjectModal.show();
     });
 
-    // Handle project submission
-    document.getElementById('saveProject').addEventListener('click', () => {
+    // Form validation function
+    function validateProjectForm() {
         const projectName = document.getElementById('projectName').value.trim();
         const projectDescription = document.getElementById('projectDescription').value.trim();
         const projectDueDate = document.getElementById('projectDueDate').value;
         const projectPriority = document.getElementById('projectPriority').value;
 
-        if (!projectName || !projectDescription || !projectDueDate) {
-            alert('All fields are required.');
+        const errors = [];
+        if (!projectName) errors.push('Project name is required');
+        if (!projectDescription) errors.push('Project description is required');
+        if (!projectDueDate) errors.push('Due date is required');
+        if (new Date(projectDueDate) < new Date().setHours(0, 0, 0, 0)) errors.push('Due date cannot be in the past');
+
+        return {
+            isValid: errors.length === 0,
+            errors,
+            data: { projectName, projectDescription, projectDueDate, projectPriority }
+        };
+    }
+
+    // Handle project submission
+    document.getElementById('saveProject').addEventListener('click', () => {
+        const validation = validateProjectForm();
+        
+        if (!validation.isValid) {
+            const errorMessage = validation.errors.join('\n');
+            showNotification(errorMessage, 'danger');
             return;
         }
 
         const projects = JSON.parse(localStorage.getItem('projects')) || [];
         const newProject = {
             id: Date.now(),
-            name: projectName,
-            description: projectDescription,
-            dueDate: projectDueDate,
-            priority: projectPriority,
+            name: validation.data.projectName,
+            description: validation.data.projectDescription,
+            dueDate: validation.data.projectDueDate,
+            priority: validation.data.projectPriority,
             status: 'active',
             tasks: [],
             teamMembers: [],
@@ -93,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show success toast notification
         const successToast = document.getElementById('successToast');
         const toastBody = successToast.querySelector('.toast-body');
-        toastBody.textContent = `Project "${projectName}" has been created successfully!`;
+        toastBody.textContent = `Project "${validation.data.projectName}" has been created successfully!`;
         const bsToast = new bootstrap.Toast(successToast, { delay: 3000 });
         bsToast.show();
     });
@@ -158,6 +176,41 @@ document.addEventListener('DOMContentLoaded', () => {
             cardInner.style.boxShadow = 'none';
         });
 
+        // Handle clear all projects
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => {
+                const projects = JSON.parse(localStorage.getItem('projects')) || [];
+                
+                if (projects.length === 0) {
+                    showNotification('No projects to clear!', 'warning');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to clear all projects? This action cannot be undone.')) {
+                    try {
+                        localStorage.removeItem('projects');
+                        showNotification('All projects cleared successfully!');
+                        
+                        // Clear the projects list with fade-out animation
+                        const projectsList = document.getElementById('projectsList');
+                        if (projectsList) {
+                            projectsList.style.transition = 'opacity 0.3s ease-out';
+                            projectsList.style.opacity = '0';
+                            setTimeout(() => {
+                                projectsList.innerHTML = '';
+                                projectsList.style.opacity = '1';
+                                updateActiveProjectsCount();
+                            }, 300);
+                        }
+                    } catch (error) {
+                        console.error('Error clearing projects:', error);
+                        showNotification('Failed to clear projects. Please try again.', 'danger');
+                    }
+                }
+            });
+        }
+
         // Handle project deletion
         const deleteBtn = projectCard.querySelector('.delete-project');
         deleteBtn.addEventListener('click', async (e) => {
@@ -167,30 +220,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
                 try {
-                    const projectId = target.dataset.projectId;
+                    const projectId = parseInt(target.dataset.projectId);
                     const projects = JSON.parse(localStorage.getItem('projects')) || [];
-                    const projectToDelete = projects.find(p => p.id === parseInt(projectId));
+                    const projectToDelete = projects.find(p => p.id === projectId);
                     
                     if (!projectToDelete) {
                         throw new Error('Project not found');
                     }
 
-                    const updatedProjects = projects.filter(p => p.id !== parseInt(projectId));
+                    const updatedProjects = projects.filter(p => p.id !== projectId);
                     localStorage.setItem('projects', JSON.stringify(updatedProjects));
 
-                    // Add fade-out animation
-                    projectCard.style.transition = 'opacity 0.3s ease-out';
-                    projectCard.style.opacity = '0';
+                    // Clear the projects list
+                    const projectsList = document.getElementById('projectsList');
+                    projectsList.innerHTML = '';
 
-                    // Remove the card after animation
-                    setTimeout(() => {
-                        projectCard.remove();
-                        updateActiveProjectsCount();
-                        showNotification('Project deleted successfully!');
-                    }, 300);
+                    // Reload all remaining projects
+                    updatedProjects.forEach(project => addProjectToList(project));
+                    updateActiveProjectsCount();
+                    showNotification('Project deleted successfully!');
                 } catch (error) {
                     console.error('Error deleting project:', error);
-                    showNotification('Failed to delete project. Please try again.');
+                    showNotification('Failed to delete project. Please try again.', 'danger');
                 }
             }
         });
@@ -218,16 +269,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }[priority] || 'secondary';
     }
 
-    // Notification function
-    function showNotification(message) {
-        const notification = document.createElement('div');
-        notification.className = 'alert alert-success position-fixed top-0 end-0 m-3';
-        notification.style.zIndex = '1050';
-        notification.textContent = message;
-        document.body.appendChild(notification);
+    // Enhanced notification function
+    function showNotification(message, type = 'success') {
+        const successToast = document.getElementById('successToast');
+        const toastHeader = successToast.querySelector('.toast-header');
+        const toastBody = successToast.querySelector('.toast-body');
 
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
+        // Update toast appearance based on type
+        toastHeader.className = `toast-header bg-${type} text-white`;
+        toastBody.textContent = message;
+
+        const bsToast = new bootstrap.Toast(successToast, { delay: 3000 });
+        bsToast.show();
     }
 });
