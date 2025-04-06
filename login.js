@@ -1,40 +1,66 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+// Import required dependencies
+import { showToast } from './toast.js';
 
+const loginForm = document.getElementById('login-form');
+const emailInput = document.querySelector('input[type="email"]');
+const passwordInput = document.querySelector('input[type="password"]');
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB0JFiMfF2QTSU9efUNwMlzvRGRDY8dG8A",
-    authDomain: "e-commerce-948b8.firebaseapp.com",
-    projectId: "e-commerce-948b8",
-    storageBucket: "e-commerce-948b8.firebasestorage.app",
-    messagingSenderId: "57814118033",
-    appId: "1:57814118033:web:ef9730f9f13a25bb1a9930",
-    measurementId: "G-LGKNJ2DG7H"
-  };
-
-
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("login-form");
-
-    if (loginForm) {
-        loginForm.addEventListener("submit", async (event) => {
-            event.preventDefault(); 
-
-            const email = document.getElementById("login-email").value;
-            const password = document.getElementById("login-password").value;
-
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                alert("Login Successful!");
-                window.location.href = "index.html"; 
-            } catch (error) {
-                alert("Login Failed: " + error.message);
-            }
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    
+    // Basic validation
+    if (!email || !password) {
+        showToast('Please fill in all fields', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
         });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Login failed');
+        }
+        
+        // Store token and user info in localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('username', data.username);
+        
+        showToast('Login successful!', 'success');
+        
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1000);
+        
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+});
+
+// Check if user is already logged in
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        window.location.href = 'dashboard.html';
+    }
+});
+
+// Check if user is already logged in
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        window.location.href = 'dashboard.html';
     }
 });

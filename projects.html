@@ -197,6 +197,33 @@
                 const projectCard = document.createElement('div');
                 projectCard.className = 'col-md-4 mb-4';
                 projectCard.innerHTML = `
+                    <div class="card project-card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">${project.name}</h5>
+                                <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
+                            </div>
+                            <p class="card-text text-muted mb-3">${project.description}</p>
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: ${project.progress || 0}%" 
+                                    aria-valuenow="${project.progress || 0}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Due: ${formatDate(project.dueDate)}</small>
+                                    <div class="btn-group">
+                                        <a href="project-details.html?id=${project.id}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${project.id}')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
                     <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title">${project.name}</h5>

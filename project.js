@@ -147,7 +147,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="card-title mb-0">${project.name}</h5>
-                    <button class="btn btn-danger btn-sm delete-project" data-project-id="${project.id}">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-sm edit-project" data-project-id="${project.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-project" data-project-id="${project.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="card-text text-muted mb-3">${project.description.length > 100 ? project.description.substring(0, 97) + '...' : project.description}</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority.charAt(0).toUpperCase() + project.priority.slice(1)} Priority</span>
+                    <span class="text-muted">Due: ${new Date(project.dueDate).toLocaleDateString()}</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: ${project.progress}%" aria-valuenow="${project.progress}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">${project.tasks.length} Tasks</small>
+                    <small class="text-muted">${project.teamMembers.length} Members</small>
+                </div>
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>

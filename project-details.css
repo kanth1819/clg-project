@@ -46,18 +46,37 @@
     background-color: #5271ff;
     transition: width 0.6s ease;
 }
+ 
+/* Task List and Filters Styles */
+.task-filters .btn-group {
+    width: 100%;
+    gap: 8px;
+}
 
-/* Task List Styles */
+.task-filters .btn {
+    flex: 1;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.task-filters .btn.active {
+    background-color: #5271ff;
+    color: white;
+    border-color: #5271ff;
+}
+
 .list-group-item {
     border: none;
     border-radius: 8px !important;
     margin-bottom: 8px;
     background-color: #f8f9ff;
     transition: all 0.3s ease;
+    padding: 1rem;
 }
 
 .list-group-item:hover {
     background-color: #e8ecff;
+    transform: translateX(5px);
 }
 
 .form-check-input:checked {
@@ -66,12 +85,26 @@
 }
 
 /* Team Members Section */
+.team-stats .bg-light {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(82, 113, 255, 0.1);
+}
+
+.team-stats .bg-light:hover {
+    background-color: #e8ecff !important;
+    transform: translateY(-3px);
+}
+
 .team-member-card {
     transition: all 0.3s ease;
+    background-color: #f8f9ff;
+    border-radius: 12px;
+    padding: 1rem;
 }
 
 .team-member-card:hover {
     transform: translateY(-5px);
+    background-color: #e8ecff;
 }
 
 .rounded-circle {

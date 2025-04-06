@@ -4,91 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLOWTRACK</title>
-    <link rel="icon" type="image/png"  href="img/Blue_White_Bold_Music_Logo-removebg-preview.png">
-
+    <link rel="icon" type="image/png" href="img/Blue_White_Bold_Music_Logo-removebg-preview.png">
     <script type="module" src="login.js" defer></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Lexend+Giga:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
         body {
-            background-color: rgb(255, 255, 255);
-            color: #5271ff;
-            font: inherit;
-            font-family: "Poppins", serif;
-  font-weight: 500;
-  font-style: italic;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
         }
+
         #login-form {
-            background-color: #ffffff;
-            box-shadow: 10px 10px 16px  #5271ff;
-            width: 400px;
-            padding: 30px;
-            border-radius: 20px;
-            margin: 10% auto;
-            margin-right: 10px;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            border: 1px solid #5271ff;
         }
+
+        .logo {
+            width: 150px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            color: #5271ff;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
         input {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 2px solid #5271ff;
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
+
         button {
-            width: 50%;
-            padding: 10px;
-            margin-top: 20px;
+            width: 100%;
+            padding: 0.8rem;
             background-color: #5271ff;
+            color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
-            color: #ffffff;
-            border-radius: 10px 0 10px 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 1rem;
         }
-        h1, p, a {
+
+        button:hover {
+            background-color: #4060ff;
+        }
+
+        p {
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        a {
             color: #5271ff;
             text-decoration: none;
+            font-weight: 500;
         }
-        .container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-   
-}
 
-.img {
-    margin-right: 50px;    
-}
-
-.img img {
-    max-width: 400px;
-    height: auto;
-    border-radius: 10px;
-}
-.logo{
-    margin-left: 50px;
-    width: 290px;
-    height: 290px;    
-}
-
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
-}
-@media (max-width: 768px) {
-    #login-form {
-        width: 90%;
-        margin: 10% auto;
-        padding: 20px;
-    }
-
-    input {
-        width: 90%;
-    }
-
-    button {
-        width: 70%;
-    }
-}
+</head>
+<body>
+    <form id="login-form">
+        <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="Logo" class="logo">
+        <h1>Welcome Back</h1>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <p>Don't have an account? <a href="register.html">Register</a></p>
+    </form>
 </body>
 </html>
