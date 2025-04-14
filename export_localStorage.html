@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export localStorage Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Export localStorage Data</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Export Data</h5>
+            </div>
+            <div class="card-body">
+                <p>This tool will export your localStorage data to JSON files that can be imported into the MySQL database.</p>
+                <button id="exportBtn" class="btn btn-primary">Export Data</button>
+            </div>
+        </div>
+        
+        <div id="resultContainer" class="d-none">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Export Results</h5>
+                </div>
+                <div class="card-body">
+                    <div id="resultContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const resultContainer = document.getElementById('resultContainer');
+            const resultContent = document.getElementById('resultContent');
+            
+            // Clear previous results
+            resultContent.innerHTML = '';
+            resultContainer.classList.remove('d-none');
+            
+            try {
+                // Get data from localStorage
+                const projects = JSON.parse(localStorage.getItem('projects')) || [];
+                const members = JSON.parse(localStorage.getItem('members')) || [];
+                
+                // Create data objects
+                const projectsData = {
+                    projects: projects
+                };
+                
+                const membersData = {
+                    members: members
+                };
+                
+                // Convert to JSON strings
+                const projectsJson = JSON.stringify(projectsData, null, 2);
+                const membersJson = JSON.stringify(membersData, null, 2);
+                
+                // Create download links
+                const projectsBlob = new Blob([projectsJson], { type: 'application/json' });
+                const membersBlob = new Blob([membersJson], { type: 'application/json' });
+                
+                const projectsUrl = URL.createObjectURL(projectsBlob);
+                const membersUrl = URL.createObjectURL(membersBlob);
+                
+                // Display results
+                resultContent.innerHTML = `
+                    <div class="alert alert-success">
+                        <h5>Export Successful!</h5>
+                        <p>Your localStorage data has been exported successfully.</p>
+                    </div>
+                    
+                    <h6>Projects Data (${projects.length} projects):</h6>
+                    <pre>${projectsJson}</pre>
+                    <a href="${projectsUrl}" download="projects.json" class="btn btn-sm btn-success mb-3">Download Projects JSON</a>
+                    
+                    <h6>Members Data (${members.length} members):</h6>
+                    <pre>${membersJson}</pre>
+                    <a href="${membersUrl}" download="members.json" class="btn btn-sm btn-success mb-3">Download Members JSON</a>
+                    
+                    <div class="alert alert-info mt-3">
+                        <h5>Next Steps:</h5>
+                        <ol>
+                            <li>Download the JSON files</li>
+                            <li>Place them in the <code>data</code> directory of your project</li>
+                            <li>Run the <code>migrate_data.php</code> script to import the data into MySQL</li>
+                        </ol>
+                    </div>
+                `;
+            } catch (error) {
+                resultContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5>Export Failed</h5>
+                        <p>An error occurred while exporting the data: ${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 

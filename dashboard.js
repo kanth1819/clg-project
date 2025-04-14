@@ -128,15 +128,28 @@ document.addEventListener('DOMContentLoaded', () => {
         taskElement.dataset.taskId = task.id;
 
         taskElement.innerHTML = `
-            <div class="task-name">${task.name}</div>
-            <div class="project-badge badge bg-secondary">${project.name}</div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="task-name">${task.name}</div>
+                    <div class="project-badge badge bg-secondary">${project.name}</div>
+                </div>
+                <div class="task-actions">
+                    <button class="btn btn-sm btn-outline-danger delete-task-btn" onclick="event.stopPropagation(); deleteTask(${project.id}, ${task.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
         `;
+        
         taskElement.style.cursor = 'pointer';
-        taskElement.addEventListener('click', () => {
+        
+        // Add click event only to the task name and project badge
+        const taskInfo = taskElement.querySelector('div:first-child');
+        taskInfo.addEventListener('click', () => {
             window.location.href = `task-details.html?taskId=${task.id}&projectId=${project.id}`;
         });
-        taskElement.title = 'Click to view task details';
-
+        taskInfo.style.cursor = 'pointer';
+        
         taskElement.addEventListener('dragstart', () => {
             taskElement.classList.add('dragging');
         });
@@ -182,6 +195,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function deleteTask(projectId, taskId) {
+        if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+            try {
+                const projects = JSON.parse(localStorage.getItem('projects')) || [];
+                const projectIndex = projects.findIndex(p => p.id === parseInt(projectId));
+
+                if (projectIndex === -1) {
+                    showError('Project not found');
+                    return;
+                }
+
+                // Find and remove the task
+                const taskIndex = projects[projectIndex].tasks.findIndex(t => t.id === parseInt(taskId));
+                if (taskIndex !== -1) {
+                    projects[projectIndex].tasks.splice(taskIndex, 1);
+                    
+                    // Save updated projects to localStorage
+                    localStorage.setItem('projects', JSON.stringify(projects));
+                    
+                    // Update UI
+                    updateTaskLists();
+                    updateDashboardStats();
+                    showSuccess('Task deleted successfully');
+                }
+            } catch (error) {
+                console.error('Error deleting task:', error);
+                showError('Failed to delete task');
+            }
+        }
+    }
+
     // Populate project dropdown
     function populateProjectDropdown() {
         const projectSelect = document.getElementById('projectSelect');
@@ -197,21 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add Task Button Click Handler
     document.getElementById('addTaskBtn').addEventListener('click', () => {
         document.getElementById('addTaskForm').reset();
-        populateProjectDropdown();
-        
-        // Add description field to the form
-        const descriptionField = document.createElement('div');
-        descriptionField.className = 'mb-3';
-        descriptionField.innerHTML = `
-            <label for="taskDescription" class="form-label">Task Description</label>
-            <textarea class="form-control" id="taskDescription" rows="3" placeholder="Enter task description"></textarea>
-        `;
-        document.getElementById('addTaskForm').insertBefore(descriptionField, document.getElementById('addTaskForm').lastElementChild);
-
-        // Set default due date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('taskDueDate').valueAsDate = tomorrow;
         populateProjectDropdown();
         addTaskModal.show();
     });
@@ -248,8 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
             project.tasks = [];
         }
         project.tasks.push(newTask);
-
-        localStorage.setItem('projects', JSON.stringify(projects));
 
         localStorage.setItem('projects', JSON.stringify(projects));
         updateTaskLists();

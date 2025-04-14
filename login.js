@@ -1,51 +1,53 @@
 // Import required dependencies
 import { showToast } from './toast.js';
 
-const loginForm = document.getElementById('login-form');
-const emailInput = document.querySelector('input[type="email"]');
-const passwordInput = document.querySelector('input[type="password"]');
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-    
-    // Basic validation
-    if (!email || !password) {
-        showToast('Please fill in all fields', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch('http://localhost:3000/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || 'Login failed');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Get team members from localStorage
+        const teamMembers = JSON.parse(localStorage.getItem('teamMembers')) || [];
+        const user = teamMembers.find(member => member.email === email);
+
+        if (user) {
+            // In a real application, you would hash the password and compare properly
+            // This is just for demonstration
+            if (password === 'password') { // Default password for demonstration
+                // Store user info in sessionStorage
+                const userInfo = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    isActive: user.isActive
+                };
+                sessionStorage.setItem('currentUser', JSON.stringify(userInfo));
+
+                // Redirect based on role
+                if (user.role === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'worker-dashboard.html';
+                }
+            } else {
+                showError();
+            }
+        } else {
+            showError();
         }
-        
-        // Store token and user info in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.userId);
-        localStorage.setItem('username', data.username);
-        
-        showToast('Login successful!', 'success');
-        
-        // Redirect to dashboard
+    });
+
+    function showError() {
+        loginError.classList.remove('d-none');
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
-        }, 1000);
-        
-    } catch (error) {
-        showToast(error.message, 'error');
+            loginError.classList.add('d-none');
+        }, 3000);
     }
 });
 

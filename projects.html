@@ -82,32 +82,28 @@
             <!-- Sidebar -->
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
                 <div class="position-sticky">
-                    <div class="text-center py-3 px-2">
-                        <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="Logo" class="img-fluid" style="max-width: 140px; margin-top: 0;">
+                    <div class="logo-container">
+                        <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="Logo" class="img-fluid">
                     </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" href="dashboard.html">
-                                <img src="img/icons/analytics.svg" alt="Dashboard" class="icon">
-                                Dashboard
+                                <img src="img/icons/analytics.svg" alt="Dashboard" class="icon"> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="#">
-                                <img src="img/icons/project.svg" alt="Projects" class="icon">
-                                Projects
+                                <img src="img/icons/project.svg" alt="Projects" class="icon"> Projects
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <img src="img/icons/task.svg" alt="Tasks" class="icon">
-                                Tasks
+                            <a class="nav-link" href="tasks.html">
+                                <img src="img/icons/task.svg" alt="Tasks" class="icon"> Tasks
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <img src="img/icons/workflow.svg" alt="Workflow" class="icon">
-                                Workflow
+                            <a class="nav-link" href="analytics.html">
+                                <img src="img/icons/analytics.svg" alt="Analytics" class="icon"> Analytics
                             </a>
                         </li>
                     </ul>
@@ -119,8 +115,7 @@
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Projects</h1>
                     <div>
-
- <button class="btn btn-primary" id="addProjectBtn">+ New Project</button>
+                        <button class="btn btn-primary" id="addProjectBtn">+ New Project</button>
                         <button class="btn btn-danger ms-2" id="clearAllBtn">Clear All</button>
                     </div>
                 </div>
@@ -201,7 +196,10 @@
                         <div class="card-body d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h5 class="card-title mb-0">${project.name}</h5>
-                                <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
+                                <div>
+                                    <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
+                                    <span class="badge bg-${project.active === false ? 'secondary' : 'success'} ms-1">${project.active === false ? 'Inactive' : 'Active'}</span>
+                                </div>
                             </div>
                             <p class="card-text text-muted mb-3">${project.description}</p>
                             <div class="progress mb-3" style="height: 8px;">
@@ -219,25 +217,6 @@
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">${project.name}</h5>
-                            <p class="card-text">${project.description}</p>
-                            <div class="mb-3">
-                                <small class="text-muted">
-                                    Due: ${new Date(project.dueDate).toLocaleDateString()}
-                                </small>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
-                                <div>
-                                    <a href="project-details.html?id=${project.id}" class="btn btn-primary btn-sm">View Details</a>
-                                    <button class="btn btn-danger btn-sm ms-2" onclick="deleteProject(${project.id})">Delete</button>
                                 </div>
                             </div>
                         </div>
