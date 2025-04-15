@@ -29,6 +29,8 @@ def setup_database(db_name="project_management.db"):
         description TEXT,
         start_date DATE,
         end_date DATE,
+        priority TEXT CHECK(priority IN ('low', 'medium', 'high')) DEFAULT 'medium',
+        progress INTEGER DEFAULT 0,
         owner_user_id INTEGER,
         FOREIGN KEY (owner_user_id) REFERENCES users (user_id)
             ON DELETE SET NULL -- Set owner to NULL if user is deleted

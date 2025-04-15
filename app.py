@@ -10,29 +10,40 @@ import logging
 import traceback
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes and origins
+
+# Configure CORS properly
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Authorization", "Content-Type"]
+    }
+})
 
 # --- Logging Setup ---
-log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
-log_handler = logging.FileHandler('flask_app.log', mode='a') # Log to flask_app.log, append mode
-log_handler.setFormatter(log_formatter)
-log_handler.setLevel(logging.ERROR) # Log ERROR level and above
-
-app.logger.addHandler(log_handler)
-app.logger.setLevel(logging.ERROR) # Ensure app logger handles ERROR level
+logging.basicConfig(level=logging.INFO)
+app.logger.setLevel(logging.INFO)
 
 # Configuration
-app.config['SECRET_KEY'] = os.urandom(24)  # For JWT token generation
+app.config['SECRET_KEY'] = 'your-secret-key-here'  # Fixed secret key for development
 DATABASE = 'project_management.db'
 
 # Serve static files
 @app.route('/')
 def root():
-    return app.send_static_file('index.html')
+    try:
+        return app.send_static_file('index.html')
+    except Exception as e:
+        app.logger.error(f"Error serving index.html: {str(e)}")
+        return jsonify({'message': 'Error serving file'}), 500
 
 @app.route('/<path:filename>')
 def serve_static(filename):
-    return app.send_static_file(filename)
+    try:
+        return app.send_static_file(filename)
+    except Exception as e:
+        app.logger.error(f"Error serving {filename}: {str(e)}")
+        return jsonify({'message': 'File not found'}), 404
 
 def get_db():
     """Get database connection"""
@@ -156,39 +167,128 @@ def login():
 @app.route('/api/projects', methods=['GET', 'POST'])
 @token_required
 def handle_projects(current_user):
+    print(f"Handling {request.method} request to /api/projects")
+    app.logger.info(f"Handling {request.method} request to /api/projects")
+    app.logger.info(f"Current user: {current_user['username']} (ID: {current_user['user_id']})")
+    
     if request.method == 'GET':
         db = get_db()
-        projects = db.execute('''
-            SELECT p.*, u.username as owner_name 
-            FROM projects p 
-            LEFT JOIN users u ON p.owner_user_id = u.user_id
-            WHERE p.owner_user_id = ? OR p.project_id IN (
-                SELECT project_id FROM team_members WHERE user_id = ?
-            )
-        ''', (current_user['user_id'], current_user['user_id'])).fetchall()
-        db.close()
-        return jsonify([dict(project) for project in projects])
+        try:
+            print(f"Fetching projects for user_id: {current_user['user_id']}")
+            app.logger.info(f"Executing SQL query to fetch projects...")
+            projects = db.execute('''
+                SELECT p.*, u.username as owner_name 
+                FROM projects p 
+                LEFT JOIN users u ON p.owner_user_id = u.user_id
+                WHERE p.owner_user_id = ? OR p.project_id IN (
+                    SELECT project_id FROM team_members WHERE user_id = ?
+                )
+            ''', (current_user['user_id'], current_user['user_id'])).fetchall()
+            
+            project_list = [dict(project) for project in projects]
+            app.logger.info(f"Found {len(project_list)} projects")
+            app.logger.info(f"Projects: {project_list}")
+            return jsonify(project_list)
+            
+        except Exception as e:
+            print(f"Error fetching projects: {str(e)}")
+            app.logger.error(f"Error fetching projects: {str(e)}")
+            app.logger.error(traceback.format_exc())
+            return jsonify({'message': 'Error fetching projects'}), 500
+        finally:
+            db.close()
+            app.logger.info("Database connection closed")
     
     elif request.method == 'POST':
+        print("Received POST request to create project")
         data = request.get_json()
+        print("Request data:", data)
+        
+        if not data:
+            print("No JSON data received")
+            return jsonify({'message': 'No data provided'}), 400
+
         project_name = data.get('project_name')
         description = data.get('description')
-        start_date = data.get('start_date')
+        start_date = data.get('start_date', datetime.now().strftime('%Y-%m-%d'))
         end_date = data.get('end_date')
+        priority = data.get('priority', 'medium')
+        progress = data.get('progress', 0)
 
         if not project_name:
+            print("Missing project name")
             return jsonify({'message': 'Project name is required'}), 400
 
+        print(f"Creating project: {project_name}")
         db = get_db()
-        cursor = db.execute('''
-            INSERT INTO projects (project_name, description, start_date, end_date, owner_user_id)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (project_name, description, start_date, end_date, current_user['user_id']))
-        project_id = cursor.lastrowid
+        try:
+            cursor = db.execute('''
+                INSERT INTO projects (project_name, description, start_date, end_date, priority, progress, owner_user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (project_name, description, start_date, end_date, priority, progress, current_user['user_id']))
+            
+            project_id = cursor.lastrowid
+            db.commit()
+            
+            # Fetch the created project to return
+            created_project = db.execute('''
+                SELECT p.*, u.username as owner_name 
+                FROM projects p 
+                LEFT JOIN users u ON p.owner_user_id = u.user_id
+                WHERE p.project_id = ?
+            ''', (project_id,)).fetchone()
+            
+            print(f"Project created successfully. ID: {project_id}")
+            return jsonify({
+                'message': 'Project created successfully',
+                'project': dict(created_project)
+            }), 201
+            
+        except Exception as e:
+            print(f"Error creating project: {str(e)}")
+            app.logger.error(f"Error creating project: {str(e)}")
+            app.logger.error(traceback.format_exc())
+            if db:
+                db.rollback()
+            return jsonify({'message': 'Error creating project'}), 500
+        finally:
+            if db:
+                db.close()
+
+@app.route('/api/projects/<int:project_id>', methods=['DELETE'])
+@token_required
+def delete_project(current_user, project_id):
+    """Deletes a specific project if the user is the owner."""
+    db = get_db()
+    try:
+        # Check if the project exists and if the current user is the owner
+        project = db.execute(
+            'SELECT owner_user_id FROM projects WHERE project_id = ?',
+            (project_id,)
+        ).fetchone()
+
+        if project is None:
+            db.close()
+            return jsonify({'message': 'Project not found'}), 404
+
+        if project['owner_user_id'] != current_user['user_id']:
+            # Add role check later if needed (e.g., admins can delete any project)
+            db.close()
+            return jsonify({'message': 'Unauthorized: You are not the owner of this project'}), 403
+
+        # Proceed with deletion
+        db.execute('DELETE FROM projects WHERE project_id = ?', (project_id,))
+        # Related tasks and team members will be handled by CASCADE constraints if set up correctly
         db.commit()
         db.close()
+        return jsonify({'message': 'Project deleted successfully'}), 200
 
-        return jsonify({'message': 'Project created successfully', 'project_id': project_id}), 201
+    except Exception as e:
+        if db:
+            db.rollback()
+            db.close()
+        app.logger.error(f">>> Error deleting project {project_id}: {e}", exc_info=True)
+        return jsonify({'message': 'An error occurred while deleting the project.'}), 500
 
 # Task routes
 @app.route('/api/tasks', methods=['GET', 'POST'])
