@@ -3,113 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLOWTRACK</title>
-    <link rel="icon" type="image/png"  href="img/Blue_White_Bold_Music_Logo-removebg-preview.png">
-
+    <title>FlowTrack - Register</title>
+    <link rel="icon" type="image/png" href="img/Blue_White_Bold_Music_Logo-removebg-preview.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script type="module" src="register.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="toast.css">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Lexend+Giga:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-body {
-    background-color: rgb(255, 255, 255);
-    color: #5271ff;
-    font-family: "Poppins", serif;
-    font-weight: 500;
-    font-style: italic;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #5271ff 0%, #3c4caa 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
 
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 80px; /* Match spacing with the login page */
-    flex-wrap: wrap; /* Ensure responsiveness */
-}
+        .register-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
 
-#form {
-    background-color: #ffffff;
-    box-shadow: 10px 10px 16px #5271ff;
-    width: 400px;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid #5271ff;
-}
+        .register-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+        }
 
-input {
-    width: 80%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 2px solid #5271ff;
-}
+        .register-form {
+            flex: 1;
+            padding: 2.5rem;
+        }
 
-button {
-    width: 50%;
-    padding: 10px;
-    margin-top: 20px;
-    background-color: #5271ff;
-    border: none;
-    cursor: pointer;
-    color: #ffffff;
-    border-radius: 10px 0 10px 10px;
-}
+        .register-image {
+            flex: 1;
+            background: linear-gradient(45deg, #5271ff22 0%, #5271ff11 100%);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
 
-h1, p, a {
-    color: #5271ff;
-    margin-top: 15px;
-    text-decoration: none;
-}
+        .register-image img {
+            max-width: 200px;
+            margin-bottom: 2rem;
+        }
 
-.img img {
-    max-width: 400px;
-    height: auto;
-    border-radius: 10px;
-}
-.logo{
-    margin-left: 100px;
-    width: 290px;
-    height: 290px;    
-}
+        .form-control:focus {
+            border-color: #5271ff;
+            box-shadow: 0 0 0 0.2rem rgba(82, 113, 255, 0.25);
+        }
 
+        .btn-primary {
+            background-color: #5271ff;
+            border-color: #5271ff;
+            padding: 0.75rem 2rem;
+        }
 
+        .btn-primary:hover {
+            background-color: #3c4caa;
+            border-color: #3c4caa;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .login-link a {
+            color: #5271ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .register-card {
+                flex-direction: column;
+            }
+
+            .register-image {
+                padding: 2rem;
+            }
+
+            .register-form {
+                padding: 2rem;
+            }
+        }
     </style>
-}
-@media (max-width: 768px) {
-    #form {
-        width: 90%;
-        margin: 20px auto;
-        padding: 20px;
-    }
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-form">
+                <h2 class="text-center mb-4">Create Your Account</h2>
+                <form id="registerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" required>
+                            <option value="">Select a role</option>
+                            <option value="team_member">Team Member</option>
+                            
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </div>
+                </form>
+                <div class="login-link">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </div>
+            <div class="register-image">
+                <img src="img/Blue_White_Bold_Music_Logo-removebg-preview.png" alt="Logo" class="img-fluid">
+                <h3>Welcome to FlowTrack</h3>
+                <p class="text-muted">Join us to manage your projects and collaborate with your team effectively.</p>
+            </div>
+        </div>
+    </div>
 
-    .container {
-        padding: 15px;
-        gap: 40px;
-    }
-
-    input {
-        width: 90%;
-    }
-
-    button {
-        width: 70%;
-    }
-
-    .img {
-        margin-right: 0;
-    }
-
-    .img img {
-        max-width: 100%;
-        height: auto;
-    }
-}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="register.js" type="module"></script>
 </body>
-
 </html>

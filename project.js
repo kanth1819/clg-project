@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle project submission
-    document.getElementById('saveProject').addEventListener('click', () => {
+    document.getElementById('saveProject').addEventListener('click', async () => {
         const validation = validateProjectForm();
         
         if (!validation.isValid) {
@@ -83,58 +83,90 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const projects = JSON.parse(localStorage.getItem('projects')) || [];
-        const newProject = {
-            id: Date.now(),
-            name: validation.data.projectName,
+        let token = null;
+        try {
+            const currentUserData = sessionStorage.getItem('currentUser');
+            if (currentUserData) {
+                const user = JSON.parse(currentUserData);
+                token = user.token;
+            }
+        } catch (e) {
+            console.error("Error reading user data from sessionStorage:", e);
+        }
+
+        if (!token) {
+            const message = 'Authentication token not found. Please login again.';
+            showNotification(message, 'danger');
+            return;
+        }
+
+        const backendProjectData = {
+            project_name: validation.data.projectName,
             description: validation.data.projectDescription,
-            dueDate: validation.data.projectDueDate,
-            priority: validation.data.projectPriority,
-            status: 'active',
-            tasks: [],
-            teamMembers: [],
-            progress: 0,
-            createdAt: new Date().toISOString()
+            end_date: validation.data.projectDueDate,
         };
 
-        projects.push(newProject);
-        localStorage.setItem('projects', JSON.stringify(projects));
+        try {
+            const response = await fetch('/api/projects', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify(backendProjectData)
+            });
 
-        // Update UI
-        addProjectToList(newProject);
-        updateActiveProjectsCount();
+            const result = await response.json();
 
-        // Clear form & hide modal
-        document.getElementById('addProjectForm').reset();
-        addProjectModal.hide();
+            if (response.ok) {
+                document.getElementById('addProjectForm').reset();
+                addProjectModal.hide();
 
-        // Show success toast notification
-        const successToast = document.getElementById('successToast');
-        const toastBody = successToast.querySelector('.toast-body');
-        toastBody.textContent = `Project "${validation.data.projectName}" has been created successfully!`;
-        const bsToast = new bootstrap.Toast(successToast, { delay: 3000 });
-        bsToast.show();
+                const successMessage = `Project "${validation.data.projectName}" created successfully!`;
+                showNotification(successMessage, 'success');
+                
+                console.log("Project list needs refreshing from backend.");
+
+            } else {
+                const message = `Error creating project: ${result.message || 'Unknown server error'}`;
+                showNotification(message, 'danger');
+            }
+
+        } catch (error) {
+            console.error('Error saving project via API:', error);
+            const message = 'Network error or failed to contact server while creating project.';
+            showNotification(message, 'danger');
+        }
     });
 
-    // Function to update active projects count
+    // --- RESTORE PAGE LOAD LOGIC --- RESTORED BLOCK START
+    // Load existing projects from localStorage
+    const projects = JSON.parse(localStorage.getItem('projects')) || [];
+    projects.forEach(addProjectToList);
+    updateActiveProjectsCount(); 
+    // --- RESTORE PAGE LOAD LOGIC --- RESTORED BLOCK END
+
+    // Function to update active projects count (Restored)
     function updateActiveProjectsCount() {
-        const activeProjectsCount = document.querySelector('.card h2');
+        const activeProjectsCount = document.querySelector('.card h2'); // Assuming this selector is correct
         if (activeProjectsCount) {
-            const projects = JSON.parse(localStorage.getItem('projects')) || [];
-            activeProjectsCount.textContent = projects.length;
+            // Recalculate from localStorage as before
+            const storedProjects = JSON.parse(localStorage.getItem('projects')) || []; 
+            activeProjectsCount.textContent = storedProjects.length;
         }
     }
 
-    // Function to add a project to the list
+    // Function to add a project to the list (Restored to expect localStorage format)
     function addProjectToList(project) {
         let projectsList = document.getElementById('projectsList');
         
-        // Create list container if it doesn't exist
         if (!projectsList) {
             projectsList = document.createElement('div');
             projectsList.className = 'row';
             projectsList.id = 'projectsList';
-            document.querySelector('.main-content').appendChild(projectsList);
+            const mainContent = document.querySelector('main .row') || document.querySelector('main');
+            if(mainContent) mainContent.appendChild(projectsList);
+            else console.error("Could not find main content area to append project list.");
         }
 
         const projectCard = document.createElement('div');
@@ -156,29 +188,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         </button>
                     </div>
                 </div>
-                <p class="card-text text-muted mb-3">${project.description.length > 100 ? project.description.substring(0, 97) + '...' : project.description}</p>
+                <p class="card-text text-muted mb-3">${(project.description || '').length > 100 ? (project.description || '').substring(0, 97) + '...' : (project.description || '')}</p>
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority.charAt(0).toUpperCase() + project.priority.slice(1)} Priority</span>
-                    <span class="text-muted">Due: ${new Date(project.dueDate).toLocaleDateString()}</span>
+                    <span class="badge bg-${getPriorityColor(project.priority)}">${(project.priority || '').charAt(0).toUpperCase() + (project.priority || '').slice(1)} Priority</span>
+                    <span class="text-muted">Due: ${project.dueDate ? new Date(project.dueDate).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div class="progress mb-2" style="height: 8px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: ${project.progress}%" aria-valuenow="${project.progress}" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-success" role="progressbar" style="width: ${project.progress || 0}%" aria-valuenow="${project.progress || 0}" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">${project.tasks.length} Tasks</small>
-                    <small class="text-muted">${project.teamMembers.length} Members</small>
-                </div>
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                <p class="card-text">${project.description}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-${getPriorityColor(project.priority)}">${project.priority}</span>
-                    <small class="text-muted">Due: ${new Date(project.dueDate).toLocaleDateString()}</small>
-                </div>
-                <div class="progress mt-2" style="height: 10px;">
-                    <div class="progress-bar" role="progressbar" style="width: ${project.progress}%"
-                         aria-valuenow="${project.progress}" aria-valuemin="0" aria-valuemax="100"></div>
+                    <small class="text-muted">${(project.tasks || []).length} Tasks</small>
+                    <small class="text-muted">${(project.teamMembers || []).length} Members</small>
                 </div>
                 <div class="mt-2 text-muted small">Click to view details</div>
             </div>
@@ -233,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Handle project deletion
         const deleteBtn = projectCard.querySelector('.delete-project');
-        deleteBtn.addEventListener('click', async (e) => {
+        deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent triggering the card click event
             const target = e.target.closest('.delete-project');
             if (!target) return;
@@ -266,19 +286,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-
-        // Redirect to project details
+        // Redirect to project details (uses localStorage id)
         projectCard.addEventListener('click', () => {
             window.location.href = `project-details.html?id=${project.id}`;
         });
 
         projectsList.appendChild(projectCard);
     }
-
-    // Load existing projects
-    const projects = JSON.parse(localStorage.getItem('projects')) || [];
-    projects.forEach(addProjectToList);
-    updateActiveProjectsCount();
 
     // Helper function for priority colors
     function getPriorityColor(priority) {
@@ -303,3 +317,4 @@ document.addEventListener('DOMContentLoaded', () => {
         bsToast.show();
     }
 });
+
